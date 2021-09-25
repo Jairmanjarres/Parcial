@@ -76,7 +76,7 @@ var db = openDatabase("itemDB", "1.0", "empleadosDB", 65538)
 
 
 
-    $("#modificar").click(function(){
+    $("#editar").click(function(){
 	var nempleado=$("#empleado").val();
 	var nsueldo=$("#sueldo").val();
 	db.transaction(function(transaction){
