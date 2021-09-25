@@ -5,7 +5,7 @@ var db = openDatabase("itemDB", "1.0", "empleadosDB", 65538)
     document.getElementById("empleado").value="";
     document.getElementById("sueldo").value="";
     }
-
+    
     $(function(){
         //cerar la tabla de empleados
         $("#crear").click(function(){
@@ -35,7 +35,7 @@ var db = openDatabase("itemDB", "1.0", "empleadosDB", 65538)
             })
         })
             limpiar();
-            cargarDatos();
+            mostrarDatos();
         })
 
          //inicializa la funcion para recibir los datos 
@@ -71,7 +71,59 @@ var db = openDatabase("itemDB", "1.0", "empleadosDB", 65538)
             })
         }
 
-    function eliminarRegistro() {
+    
+
+
+
+
+    $("#modificar").click(function(){
+	var nempleado=$("#empleado").val();
+	var nsueldo=$("#sueldo").val();
+	db.transaction(function(transaction){
+		var sql="UPDATE empleados SET empleado='"+nempleado+"', sueldo='"+nsueldo+"' WHERE id="+nuevoId+";"
+		transaction.executeSql(sql,undefined,function(){
+			mostrarDatos();
+			limpiar();
+		}, function(transaction, err){
+			alert(err.message)
+		})
+    })
+})  
+
+// Para borrado total
+$("#borrarTodo").click(function(){
+	if(!confirm("Sguro desea borrar la tabla?, los datos se perderán permanentemente",""))
+		return;
+	db.transaction(function(transaction){
+		var sql="DROP TABLE empleados ";
+		transaction.executeSql(sql,undefined,function(){
+			alert("Tabla borrada satisfactoriamente, Por favor, actualice la página")
+		}, function(transaction, err){
+			alert(err.message);
+		})
+	})
+})
+    
+})
+function editar(){
+    $(document).one('click','button[type="button"]', function(event){
+    let id=this.id;
+    var lista=[];
+    $("#listaEmpleados").each(function(){
+        var celdas=$(this).find('tr.Reg_'+id);
+        celdas.each(function(){
+            var registro=$(this).find('span');
+            registro.each(function(){
+                lista.push($(this).html())
+            });
+        });
+    });
+    document.getElementById("empleado").value=lista[1];
+    document.getElementById("sueldo").value=lista[2].slice(0,-5);
+    nuevoId=lista[0].substr(1);
+})
+}
+function eliminarRegistro() {
     $(document).one('click', 'button[type="button"]', function (event) {
         let id = this.id;
         var lista = [];
@@ -96,53 +148,3 @@ var db = openDatabase("itemDB", "1.0", "empleadosDB", 65538)
         })
     });
     }
-
-function editar(){
-    $(document).one('click','button[type="button"]', function(event){
-    let id=this.id;
-    var lista=[];
-    $("#listaEmpleados").each(function(){
-        var celdas=$(this).find('tr.Reg_'+id);
-        celdas.each(function(){
-            var registro=$(this).find('span');
-            registro.each(function(){
-                lista.push($(this).html())
-            });
-        });
-    });
-    document.getElementById("empleado").value=lista[1];
-    document.getElementById("sueldo").value=lista[2].slice(0,-5);
-    nuevoId=lista[0].substr(1);
-})
-}
-
-
-    $("#modificar").click(function(){
-	var nempleado=$("#empleado").val();
-	var nsueldo=$("#sueldo").val();
-	db.transaction(function(transaction){
-		var sql="UPDATE empleados SET empleado='"+nempleado+"', sueldo='"+nsueldo+"' WHERE id="+nuevoId+";"
-		transaction.executeSql(sql,undefined,function(){
-			mostrar();
-			limpiar();
-		}, function(transaction, err){
-			alert(err.message)
-		})
-    })
-})  
-
-// Para borrado total
-$("#borrarTodo").click(function(){
-	if(!confirm("Sguro desea borrar la tabla?, los datos se perderán permanentemente",""))
-		return;
-	db.transaction(function(transaction){
-		var sql="DROP TABLE empleados ";
-		transaction.executeSql(sql,undefined,function(){
-			alert("Tabla borrada satisfactoriamente, Por favor, actualice la página")
-		}, function(transaction, err){
-			alert(err.message);
-		})
-	})
-})
-    
-})
