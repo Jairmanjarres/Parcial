@@ -2,14 +2,14 @@ var nuevoId;
 var db = openDatabase("itemDB", "1.0", "itemDB", 65535)
 
 function limpiar() {
-    document.getElementById("item").value = "";
-    document.getElementById("contacto").value = "";
+    document.getElementById("empleados").value = "";
+    document.getElementById("sueldo").value = "";
 }
 function eliminarRegistro() {
     $(document).one('click', 'button[type="button"]', function (event) {
         let id = this.id;
         var lista = [];
-        $("#listaCliente").each(function () {
+        $("#listaEmpleados").each(function () {
             var celdas = $(this).find('tr.Reg_' + id);
             celdas.each(function () {
                 var registro = $(this).find('span.mid');
@@ -43,7 +43,7 @@ function editar(){
             });
         });
     });
-    document.getElementById("item").value=lista[1];
+    document.getElementById("empleado").value=lista[1];
     document.getElementById("sueldo").value=lista[2].slice(0,-5);
     nuevoId=lista[0].substr(1);
 })
@@ -54,8 +54,8 @@ $(function(){
         db.transaction(function(transaction){
             var sql="CREATE TABLA productos"+
             "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-            "item VARCHAR(100) NOT NULL,"+
-            "precio DECIMAL(5,2) NOT NULL)";
+            "empleado VARCHAR(100) NOT NULL,"+
+            "sueldo DECIMAL(10,2) NOT NULL)";
             transaction.executeSql(sql,undefined, function(){
                 alert("tabla creada sastifactoriamente");
             },function(transaction, err){
@@ -63,30 +63,30 @@ $(function(){
             })
         });
     });
-    //cargar la lista de productos
+    //recibe los datos 
     $("#listar").click(function(){
         cargardatos();
     })
-    //funcion para listar y pintar tabla de productos en la pagina web
+    //funcion para cargar lista y mostrar tabla
     function cargardatos(){
-        $("#listaproductos").children().remove();
+        $("#listaEmpleados").children().remove();
         db.transaction(function(transaction){
-            var sql="SELECT * FROM productos ORDER BY id DESC";
+            var sql="SELECT * FROM empleados ORDER BY id DESC";
             transaction.executeSql(sql,undefined, function(transaction,result){
                 if(result.rows.length){
-                    $("#listaproductos").append('<tr><th>Código</th><th>Producto</th><th>Precio</th><th></th><th></th></tr>');
+                    $("#listaEmpleados").append('<tr><th>Código</th><th>Empleado</th><th>Sueldo</th><th></th><th></th></tr>');
 
                     for(var i=0;i<result.rows.length; i++){
-                        var row=result.rows.item(i);
-                        var item=row.item;
+                        var row=result.rows.sueldo(i);
+                        var sueldo=row.sueldo;
                         var id=row.id;
-                        var precio=row.precio;
-                        $("#listaProductos").append('<tr id="fila'+id+'" class="Reg_A'+id+'"><td><span class="mid">A'+
-                        id+'</span></td><td><span>'+item+'</span></td><td><span>'+
-                        precio+' USD$</span></td><td><button type="button" id="A'+id+'" class="btn btn-success" onclick="editar()"><img src="libs/img/edit.png" /></button></td><td><button type="button" id="A'+id+'" class="btn btn-danger" onclick="eliminarRegistro()"><img src="libs/img/delete.png" /></button></td></tr>');
+                        var sueldo=row.sueldo;
+                        $("#listaEmpleados").append('<tr id="fila'+id+'" class="Reg_A'+id+'"><td><span class="mid">A'+
+                        id+'</span></td><td><span>'+sueldo+'</span></td><td><span>'+
+                        sueldo+' Pesos</span></td><td><button type="button" id="A'+id+'" class="btn btn-success" onclick="editar()"><img src="libs/img/edit.png" /></button></td><td><button type="button" id="A'+id+'" class="btn btn-danger" onclick="eliminarRegistro()"><img src="libs/img/delete.png" /></button></td></tr>');
                     }
                 }else{
-                    $("#listaProductos").append('<tr><td colspan="5" align="center">No existen registros de productos</td></tr>');
+                    $("#listaEmpleados").append('<tr><td colspan="5" align="center">No existen registros de productos</td></tr>');
 
                 }
             },function(transaction,err){
@@ -97,6 +97,15 @@ $(function(){
 })
 
 $("#modificar").click(function(){
-	var nprod=$("#item").val();
-	var nprecio=$("#precio").val();
-	
+	var nempleado=$("#empleado").val();
+	var nsueldo=$("#sueldo").val();
+	db.transaction(function(transaction){
+		var sql="UPDATE productos SET empleado='"+nempleado+"', sueldo='"+nsueldo+"' WHERE id="+nuevoId+";"
+		transaction.executeSql(sql,undefined,function(){
+			cargarDatos();
+			limpiar();
+		}, function(transaction, err){
+			alert(err.message)
+		})
+    })
+})
