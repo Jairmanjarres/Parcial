@@ -95,3 +95,8 @@ $(function(){
         })
     }
 })
+
+$("#modificar").click(function(){
+	var nprod=$("#item").val();
+	var nprecio=$("#precio").val();
+	
