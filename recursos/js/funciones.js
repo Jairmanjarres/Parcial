@@ -48,3 +48,20 @@ function editar(){
     nuevoId=lista[0].substr(1);
 })
 }
+$(function(){
+    //cerar la tabla de productos
+    $("#crear").cclick(function(){
+        db.transaction(function(transaction){
+            var sql="CREATE TABLA productos"+
+            "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+            "item VARCHAR(100) NOT NULL,"+
+            "precio DECIMAL(5,2) NOT NULL)";
+            transaction.executeSql(sql,undefined, function(){
+                alert("tabla creada sastifactoriamente");
+            },function(transaction, err){
+                alert(err.massage);
+            })
+        });
+    });
+    
+})
