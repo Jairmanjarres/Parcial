@@ -5,7 +5,7 @@ function limpiar() {
     document.getElementById("empleados").value = "";
     document.getElementById("sueldo").value = "";
 }
-function eliminarRegistro() {
+function eliminar() {
     $(document).one('click', 'button[type="button"]', function (event) {
         let id = this.id;
         var lista = [];
@@ -21,7 +21,7 @@ function eliminarRegistro() {
         nuevoId = lista[0].substr(1);
         
         db.transaction(function (transaction) {
-            var sql = "borrar=" + nuevoId + ";"
+            var sql = "DELETE FROM empleados WHERE ID=" + nuevoId + ";"
             transaction.executeSql(sql, undefined, function () {
                 alert("Registro borrado satisfactoriamente, Por favor actualice la tabla")
             }, function (transaction, err) {
@@ -30,15 +30,16 @@ function eliminarRegistro() {
         })
     });
 }
+
 function editar(){
     $(document).one('click','button[type="button"]', function(event){
     let id=this.id;
     var lista=[];
-    $("#listaProductos").each(function(){
+    $("#listaEmpleados").each(function(){
         var celdas=$(this).find('tr.Reg_'+id);
         celdas.each(function(){
-            var registro=$(this).find('span');
-            registro.each(function(){
+            var registrar=$(this).find('span');
+            registrar.each(function(){
                 lista.push($(this).html())
             });
         });
@@ -50,25 +51,26 @@ function editar(){
 }
 $(function(){
     //cerar la tabla de productos
-    $("#crear").cclick(function(){
+    $("#crear").click(function(){
         db.transaction(function(transaction){
-            var sql="CREATE TABLA productos"+
+            var sql="CREATE TABLA empleados"+
             "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
             "empleado VARCHAR(100) NOT NULL,"+
-            "sueldo DECIMAL(10,2) NOT NULL)";
+            "sueldo DECIMAL(5,2) NOT NULL)";
             transaction.executeSql(sql,undefined, function(){
                 alert("tabla creada sastifactoriamente");
-            },function(transaction, err){
-                alert(err.massage);
+            }, function(transaction, err){
+                alert(err.message);
             })
         });
     });
+
     //recibe los datos 
-    $("#listar").click(function(){
-        cargardatos();
+    $("#mostrar").click(function(){
+        mostrar();
     })
     //funcion para cargar lista y mostrar tabla
-    function cargardatos(){
+    function mostrar(){
         $("#listaEmpleados").children().remove();
         db.transaction(function(transaction){
             var sql="SELECT * FROM empleados ORDER BY id DESC";
@@ -96,16 +98,44 @@ $(function(){
     }
 })
 
+$("#registrar").click(function(){
+	var empleado=$("#empleado").val();
+	var sueldo=$("#sueldo").val();
+	db.transaction(function(transaction){
+		var sql="INSERT INTO empleados(empleado,sueldo) VALUES(?,?)";
+		transaction.executeSql(sql,[empleado,sueldo],function(){			
+		}, function(transaction, err){
+			alert(err.message);
+		})
+	})
+		limpiar();
+		cargarDatos();
+	})
+
 $("#modificar").click(function(){
 	var nempleado=$("#empleado").val();
 	var nsueldo=$("#sueldo").val();
 	db.transaction(function(transaction){
-		var sql="UPDATE productos SET empleado='"+nempleado+"', sueldo='"+nsueldo+"' WHERE id="+nuevoId+";"
+		var sql="UPDATE empleados SET empleado='"+nempleado+"', sueldo='"+nsueldo+"' WHERE id="+nuevoId+";"
 		transaction.executeSql(sql,undefined,function(){
-			cargarDatos();
+			mostrar();
 			limpiar();
 		}, function(transaction, err){
 			alert(err.message)
 		})
     })
+})
+
+// Para borrado total
+$("#borrarTodo").click(function(){
+	if(!confirm("Sguro desea borrar la tabla?, los datos se perderán permanentemente",""))
+		return;
+	db.transaction(function(transaction){
+		var sql="DROP TABLE empeleados";
+		transaction.executeSql(sql,undefined,function(){
+			alert("Tabla borrada satisfactoriamente, Por favor, actualice la página")
+		}, function(transaction, err){
+			alert(err.message);
+		})
+	})
 })
