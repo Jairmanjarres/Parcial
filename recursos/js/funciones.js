@@ -13,7 +13,7 @@ var db = openDatabase("itemDB", "1.0", "empleadosDB", 65538)
                 var sql="CREATE TABLE empleados "+
                 "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
                 "empleado VARCHAR(100) NOT NULL,"+
-                "sueldo DECIMAL(20,2) NOT NULL)";
+                "sueldo INTEGER NOT NULL)";
                 transaction.executeSql(sql,undefined, function(){
                     alert("tabla creada sastifactoriamente");
                 }, function(transaction, err){
@@ -59,7 +59,7 @@ var db = openDatabase("itemDB", "1.0", "empleadosDB", 65538)
                             var sueldo=row.sueldo;
                             $("#listaEmpleados").append('<tr id="fila'+id+'" class="Reg_A'+id+'"><td><span class="mid">A'+
                             id+'</span></td><td><span>'+empleado+'</span></td><td><span>'+
-                            sueldo+' Pesos$</span></td><td><button type="button" id="A'+id+'" class="btn btn-success" onclick="editar()"><img src="recursos/img/editar.png" /></button></td><td><button type="button" id="A'+id+'" class="btn btn-danger" onclick="eliminarRegistro()"><img src="recursos/img/eliminar.png" /></button></td></tr>');
+                            sueldo+'</span></td><td><button type="button" id="A'+id+'" class="btn btn-success" onclick="editar()"><img src="recursos/img/editar.png" /></button></td><td><button type="button" id="A'+id+'" class="btn btn-danger" onclick="eliminarRegistro()"><img src="recursos/img/eliminar.png" /></button></td></tr>');
                         }
                     }else{
                         $("#listaEmpleados").append('<tr><td colspan="5" align="center">No existen registros de empleados</td></tr>');
@@ -118,7 +118,7 @@ function editar(){
         });
     });
     document.getElementById("empleado").value=lista[1];
-    document.getElementById("sueldo").value=lista[2].slice(0,-5);
+    document.getElementById("sueldo").value=lista[2];
     nuevoId=lista[0].substr(1);
 })
 }
