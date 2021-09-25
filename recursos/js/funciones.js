@@ -63,5 +63,35 @@ $(function(){
             })
         });
     });
-    
+    //cargar la lista de productos
+    $("#listar").click(function(){
+        cargardatos();
+    })
+    //funcion para listar y pintar tabla de productos en la pagina web
+    function cargardatos(){
+        $("#listaproductos").children().remove();
+        db.transaction(function(transaction){
+            var sql="SELECT * FROM productos ORDER BY id DESC";
+            transaction.executeSql(sql,undefined, function(transaction,result){
+                if(result.rows.length){
+                    $("#listaproductos").append('<tr><th>Código</th><th>Producto</th><th>Precio</th><th></th><th></th></tr>');
+
+                    for(var i=0;i<result.rows.length; i++){
+                        var row=result.rows.item(i);
+                        var item=row.item;
+                        var id=row.id;
+                        var precio=row.precio;
+                        $("#listaProductos").append('<tr id="fila'+id+'" class="Reg_A'+id+'"><td><span class="mid">A'+
+                        id+'</span></td><td><span>'+item+'</span></td><td><span>'+
+                        precio+' USD$</span></td><td><button type="button" id="A'+id+'" class="btn btn-success" onclick="editar()"><img src="libs/img/edit.png" /></button></td><td><button type="button" id="A'+id+'" class="btn btn-danger" onclick="eliminarRegistro()"><img src="libs/img/delete.png" /></button></td></tr>');
+                    }
+                }else{
+                    $("#listaProductos").append('<tr><td colspan="5" align="center">No existen registros de productos</td></tr>');
+
+                }
+            },function(transaction,err){
+                alert(err.message);
+            })
+        })
+    }
 })
