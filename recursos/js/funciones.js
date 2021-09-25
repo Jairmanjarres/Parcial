@@ -102,8 +102,7 @@ $("#borrarTodo").click(function(){
 			alert(err.message);
 		})
 	})
-})
-    
+})  
 })
 function editar(){
     $(document).one('click','button[type="button"]', function(event){
